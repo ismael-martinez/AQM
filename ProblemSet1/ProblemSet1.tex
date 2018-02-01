@@ -1,0 +1,84 @@
+% Get the problems in first, then do the formatting
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\begin{document}
+\section*{Problem 1 - Least Squares}
+Define $\textbf{b} = \begin{bmatrix}  b_{0} & b_{1} & b_{2} \dots b_{m} \end{bmatrix}$ where $\textbf{b} \in \mathbb{R}^{n}$. Similarly, 
+define $\textbf{x}_{i} = \begin{bmatrix} 1 & x_{i1} & x_{i2} \dots x_{in}\end{bmatrix}$ where $\textbf{x}_{i} \in \mathbb{R}^{n}$. Here we have 
+defined $x_{i0} = 1$. \\
+
+The vertical distance between a point $(y_i,\textbf{x}_i)$ and the hyperplane $\textbf{x}_i^T \textbf{b}$ is 
+$y_i - (\textbf{x}_i^T \textbf{b})$, $i = \left\{ 1,2,\dots m \right\}$. \\
+
+By summing the squared terms for every point $y_i$, we get the $RSS$ function \\
+\begin{equation*}
+RSS = \sum_{i=1}^m \left[y_i - \left(\textbf{x}_i^T \textbf{b}\right)\right]^2
+\end{equation*} \\
+
+If we define $X = 
+\begin{bmatrix}
+	\textbf{x}_1 \\
+	\textbf{x}_2 \\
+	\vdots \\
+	\textbf{x}_m
+\end{bmatrix}$  
+and $Y = 
+\begin{bmatrix}
+	y_1 \\
+	y_2 \\
+	\vdots \\
+	y_m
+\end{bmatrix}$, then we can minimize $RSS$ with respect to $\textbf{b}$ to get 
+\begin{equation*}
+	\textbf{b} = \left( X^T X \right) ^{-1} X Y
+\end{equation*}
+
+\section*{Problem 2 - Optimization}
+Please see \texttt{Problem2\textbackslash problem.1.2.R} for work.
+
+\section*{Problem 3 - Interpretation}
+See \texttt{Q3\_considerations.R} for all calculations and marketing plan. \\
+
+\section*{Problem 4 - Weighted Regression}
+1. We consider the model $y = X\beta + \epsilon$, where 
+\begin{equation*}
+	\epsilon \sim \mathcal{N} \left( \begin{bmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_m \end{bmatrix},
+	\begin{bmatrix} 
+		\sigma_1^2 &0 &\dots & 0 \\
+		0 & \sigma_2^2 &\dots& 0 \\ 
+		\vdots & \vdots & \ddots & \vdots \\
+		0 & 0 & \dots & \sigma_m^2
+	\end{bmatrix} \right)
+\end{equation*}
+where $m$ is the total number of observations.\\
+
+$W$ is a matrix with$w_i$ on the diagonal and zeroes everywhere else, which corresponds to the reciprocal $w_i = \frac{1}{\sigma_i^2}$. Then, we have 
+\begin{equation*}
+	W = 
+	\begin{bmatrix}
+		\frac{1}{\sigma_1^2} & 0 & \dots & 0 \\
+		0 & \frac{1}{\sigma_2^2} & \dots & 0 \\
+		\dots & \dots & \ddots & \vdots \\
+		0 & 0 & \dots & \frac{1}{\sigma_m^2}.
+	\end{bmatrix}
+\end{equation*}
+
+We can now minimize 
+\begin{equation*}
+	WRSS = \frac{1}{n}(y - Xb)^TW(y - Xb).
+\end{equation*}
+Take the gradient of $WRSS$ and set it to zeros.
+\begin{align*}
+	\frac{\partial WRSS}{\partial b}  = \frac{1}{n}X^T W (y-Xb)  = 0 \\
+		 \implies &\frac{1}{n}X^T (Wy - WXb) = 0 \\
+		  \implies &\frac{1}{n}X^TWy - X^TWXb = 0 \\
+		  \implies& \frac{1}{n}X^TWy = X^TWXb \\
+		 \implies &b = \frac{1}{n}\left(X^TWX\right)^{-1} X^TWy
+\end{align*}
+2. It prioritizes fitting to points with smaller variance than those with higher. \\
+
+3. We want to weight the terms with a smaller variance $\sigma^2_i$ higher than terms with a smaller variance. 
+	In this case, $\frac{1}{\sigma^2_i} > \frac{1}{\sigma^2_j} \iff \sigma^2_i < \sigma^2_j$.
+
+\end{document}

@@ -1,0 +1,152 @@
+\title{AQM Problem Set 3}
+\author{Ismael Martinez}
+\date{\today}
+
+
+\documentclass[12pt]{article}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\DeclareMathOperator*{\argmin}{arg\!\min}
+\begin{document}
+\maketitle
+
+\section*{Problem 1 - Regularization and Condition Numbers}
+\subsection*{Part a.}
+Let $\Gamma = \gamma I$.
+\begin{align*}
+RSS &= \frac{1}{2}(y-X\beta)^T(y-X\beta) - \frac{1}{2}\Gamma\beta^T\beta \\
+\frac{\partial{RSS}}{\partial{\beta}} &= -X^T(y-X\hat{\beta}) + \Gamma\hat{\beta} = 0 \\
+&\implies -X^Ty + X^TX\hat{\beta} + \Gamma\hat{\beta} = 0\\
+&\implies X^TX + \Gamma\hat{\beta} = X^Ty\\
+&\implies (X^TX+\Gamma)\hat{\beta} = X^Ty\\
+&\implies \hat{\beta} = (X^TX + \Gamma)^{-1} X^Ty  =(X^TX + \gamma I)^{-1} X^Ty
+\end{align*}
+
+\subsection*{Part b.}
+\begin{align*} 
+cond(A) &= \frac{\frac{A^{-1}\Delta\|b\|}{A^{-1}\|b\|}}{\frac{\Delta\|b\|}{\|b\|}} \\
+&= \frac{\|A^{-1}\Delta b\|}{\|A^{-1}b\|} \cdot \frac{\|b\|}{\|\Delta b\|} \\
+&= \frac{\|A^{-1}\Delta b\|}{\|\Delta b\|} \cdot \frac{\|b\|}{\|A^{-1}b\|} \\
+&= \|A^{-1}\| \cdot \frac{1}{\|A^{-1}\|}\\
+&= \|A^{-1}\|\cdot\|A\|
+\end{align*}
+By the Cauchy-Schwarz inequality, we get 
+\begin{align*}
+cond(A) = \|A^{-1}\|\cdot\|A\| \geq \|A^{-1}A\| = 1
+\end{align*}
+
+\subsection*{Part c.}
+We assume that $\Delta A = 0$ and $\Delta b \leq b$.
+\begin{align*}
+\frac{\|\Delta \beta\|}{\|\beta\|} &= \frac{\|\Delta(A^{-1}b)\|}{\|A^{-1}b\|} \\
+&= \frac{\|\Delta A^{-1}\Delta b\|}{\|A^{-1}b\|} \\
+&\leq 1 \leq cond(A)
+\end{align*}
+
+\subsection*{Part d.}
+$A$ is a positive definite matrix. $B = A + \alpha I$, $\alpha \in [0,1]$. Looking at the eigenvalues of $A$ and $B$, we see:
+\begin{align*}
+Ax &= \lambda x \\
+\implies Ax + \alpha I x &= \lambda x + \alpha x \\
+\implies Bx &= (\lambda + \alpha)x
+\end{align*}
+Since the eigenvalues of $B$ are larger than those of $A$, and $A$ has all positive eigenvalues from being positive definite, then $B$ has all positive eigenvalues and $B$ has an inverse.
+\begin{align*}
+cond(A) = \|A^{-1}\|\|A\| \geq \|A^{-1} + \alpha I\| \|A + \alpha I\| = cond(B)
+\end{align*}
+
+\section*{Problem 2 - Elastic Net and Variable Selection}
+\subsection*{Part a.}
+We first define our functions and augmented data.
+\begin{align*}
+J_1(\beta) = \|\textbf{y} - \textbf{X}\beta\|^2_2 + \lambda_2\|\beta\|^2_2 + \lambda\|\beta\| \\
+\end{align*}
+\begin{center}
+and
+\end{center}
+\begin{align*}
+J_2(\widetilde{\beta}) = \|\widetilde{\textbf{y}} - \widetilde{\textbf{X}}\widetilde{\beta}\|^2_2 + \lambda_1\|\widetilde{\beta}\|
+\end{align*}
+\begin{center}
+where $c = (1 + \lambda_2)^{-\frac{1}{2}}$, $\beta = c\widetilde{\beta}$, and
+\end{center}
+\begin{align*}
+\widetilde{\textbf{X}} = c 
+\begin{bmatrix} 
+X \\
+\sqrt{\lambda_2}\textbf{I}_d
+\end{bmatrix}
+, \widetilde{\textbf{y}} = 
+\begin{bmatrix}
+\textbf{y} \\
+\textbf{0}_{dx1}
+\end{bmatrix}
+\end{align*}
+1.
+\begin{proof}
+\begin{align*}
+c(\argmin_{\widetilde{\beta}} J_2(\widetilde{\beta})) &= c\lbrack \argmin_{\widetilde{\beta}} \|\widetilde{\textbf{y}} - \widetilde{\textbf{X}}\widetilde{\beta}\|^2_2 + c\lambda_1\|\widetilde{\beta}\| \rbrack \\
+&= c\lbrack \argmin_{\beta} \frac{1}{c}\lbrack \sum^{N}(\textbf{y} - c\textbf{X}\frac{\beta}{c})^2 + \sum^{D}(0 - c\sqrt{\lambda_2}\frac{\beta}{c})^2 + c\lambda_1 \sum^{D} |\frac{\beta}{c}|\rbrack\rbrack \\
+&= \frac{c}{c}\lbrack \argmin_{\beta} \sum^{N}(\textbf{y} - \textbf{X}\beta)^2 + \lambda_2 \sum^{D}\beta^2 + \lambda_1 \|\beta\|\rbrack \\
+&= \argmin_\beta J_1(\beta)
+\end{align*}
+\end{proof}
+2. 
+\begin{align*}
+J_{W_1}(\beta) = (\textbf{y} - \textbf{X}\beta)^T \textbf{W} (\textbf{y} - \textbf{X}\beta)+ \lambda_2\|\beta\|^2_2 + \lambda_1\|\beta\|
+\end{align*}
+\begin{center}
+where $\textbf{W} = 
+\begin{bmatrix}
+\frac{1}{\sigma^2_1} & 0 & \dots & 0 \\
+0 & \frac{1}{\sigma^2_2} & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & \frac{1}{\sigma^2_n}
+\end{bmatrix}$
+\end{center}
+\begin{align*}
+\hat{\beta} = \argmin_{\beta} J_{W_1}(\beta)
+\end{align*}
+3. 
+\begin{align*}
+J_{W_2}(\widetilde{\beta}) = (\widetilde{\textbf{y}} - \widetilde{\textbf{X}}\widetilde{\beta})^T \widetilde{\textbf{W}} (\widetilde{\textbf{y}} - \widetilde{\textbf{X}}\widetilde{\beta})+ \lambda_1\|\widetilde{\beta}\|
+\end{align*}
+\begin{center}
+where $\widetilde{\textbf{W}} = 
+\begin{bmatrix}
+\textbf{W} \\
+\textbf{I}_d
+\end{bmatrix}$
+\end{center}
+\begin{align*}
+\hat{\beta} = \argmin_{\widetilde{\beta}} J_W(\widetilde{\beta})
+\end{align*}
+4. 
+\begin{align*}
+\hat{\beta} = \argmin_\beta \beta^T \left( \frac{\textbf{X}^T\textbf{W}\textbf{X} + \lambda_2 \textbf{I}}{1 + \lambda_2} \right) \beta - 2\textbf{y}^T \textbf{W}\textbf{X} \beta + \lambda_1 \|\beta\|_1
+\end{align*}
+
+\subsection*{Part b.}
+\begin{align*}
+J_{W}(\beta) = \beta^T\left( \frac{X^TWX}{1+\lambda_2} \right) \beta - 2y^TWX\beta + \lambda_1 \|\beta\|_1 \\
+\frac{\partial{J_W}}{\partial{\beta}} = \beta^T\left(\left( \frac{X^TWX}{1+\lambda_2} \right)^T + \left( \frac{X^TWX}{1+\lambda_2} \right)\right) - 2y^TWX + \lambda_1\partial{\|\beta\|_1}
+\end{align*}
+\begin{center}
+where $\partial{\|\beta\|_1} = 
+\begin{cases}
+-\lambda_1 & \mbox{if } \beta_j < 0 \\
+\lbrack -\lambda_1. \lambda_1 \rbrack & \mbox{if } \beta_j = 0 \\
+\lambda_1 & \mbox{if } \beta_j > 0
+\end{cases}$
+\end{center}
+\subsection*{Part c.}
+Run the file \texttt{GradientDescentMethods.py} which calls the \texttt{proximalGradientDescent.py} and \texttt{subgradientDescent.py} algorithms. By testing a range of $\lambda_1$ and $\lambda_2$ values, we see that the Proximal Gradient Descent method is much faster. 
+\subsection*{Part d.}
+1. Find the parallelized algorithm in \texttt{parallelizedGradientDescent.py}. \\
+2. Find the Bootstrap CI Algorithm in \texttt{bootstrapBoston.py} \\
+\subsection*{Part f.}
+2. We are clustering a set of normally distributed arrays of size 30, where each point is drawn from a $\mathcal{N}(0,\mathbf{\Sigma})$. It can be important to distinguish between points overlapped in multiple clusters as they show a level of uncertainty to whcih cluster a point belongs and allows us to view those points as having a probability of belonging to one or the other. When a point must be a part of a single cluster, having this non-overlapping approach is more useful.
+
+\end{document}
